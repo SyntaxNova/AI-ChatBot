@@ -8,7 +8,6 @@
 ![Node.js](https://img.shields.io/badge/Node.js-Express-green?style=for-the-badge&logo=node.js)
 ![MongoDB](https://img.shields.io/badge/MongoDB-7.4.2-green?style=for-the-badge&logo=mongodb)
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Available-brightgreen?style=for-the-badge)](https://your-demo-link.com)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 [![Contributions Welcome](https://img.shields.io/badge/Contributions-Welcome-orange?style=for-the-badge)](CONTRIBUTING.md)
 
@@ -192,6 +191,16 @@ NovaAI/
 ```
 
 ---
+## 📱 Screenshots
+
+<div align="center">
+
+![App Screenshot](https://github.com/SyntaxNova/AI-ChatBot/blob/main/frontend/public/home%20page%202.png)
+![Login Page](https://github.com/SyntaxNova/AI-ChatBot/blob/main/frontend/public/home-page1.png)
+![Login Page](https://github.com/SyntaxNova/AI-ChatBot/blob/main/frontend/public/Login%20-page.png)
+![Login Page](https://github.com/SyntaxNova/AI-ChatBot/blob/main/frontend/public/chat-pageScreenShot.png)
+
+</div>
 
 
 ## 🤝 **Contributing**
@@ -237,3 +246,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 Made with ❤️ by [Atharva Pachpute (Syntax Nova)](https://github.com/SyntaxNova)
 
 </div>
+
