@@ -1,36 +1,75 @@
-import mainBot from "/page-photos/homepage-bot.png";
-import ui1 from "/page-photos/UI-1.png";
-
-import { NavLink } from "react-router-dom";
-
-import Section from "../components/home/Sections";
-
-import styles from "./Home.module.css";
+import { Box, useMediaQuery, useTheme } from "@mui/material";
+import TypingAnim from "../components/typer/TypingAnim";
+import Footer from "../components/footer/Footer";
 
 const Home = () => {
-	return (
-		<div className={styles.parent}>
-			<Section
-				src={mainBot}
-				alt='main-bot'
-				animateImg={true}
-				imgStyle={styles.ui1}
-				reverse={false}>
-				<h2>| NEXT GEN PLATFORM</h2>
-				<h1>
-					YOUR OWN PERSONAL <span className={styles.highlight}>CHAT BOT</span>
-				</h1>
-				<p>
-					Experience the ultimate in user-friendly design with our secure and
-					confidential chat interface, ensuring seamless and natural
-					conversations while receiving assistance on a diverse range of topics
-				</p>
-				<NavLink to='/login' className={styles.btn}>
-					Get Started For Free
-				</NavLink>
-			</Section>
-		</div>
-	);
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
+  return (
+    <Box
+      width={"100%"}
+      height={"100%"}
+      sx={{
+        backgroundImage: `linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 50%, rgba(240, 147, 251, 0.1) 100%)`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        minHeight: "100vh", // Ensure full viewport height
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          width: "100%",
+          flexDirection: "column",
+          alignItems: "center",
+          mx: "auto",
+          mt: 5,
+        }}
+      >
+        <Box>
+          <TypingAnim />
+        </Box>
+        <Box
+          sx={{
+            width: "100%",
+            display: "flex",
+            flexDirection: { md: "row", xs: "column", sm: "column" },
+            gap: 5,
+            my: 10,
+          }}
+        >
+          <img
+            className="image rotate"
+            src="openai.png"
+            alt="openai"
+            style={{ width: "150px", margin: "auto" }}
+          />
+        </Box>
+        <Box sx={{ display: "flex", mx: "auto" }}>
+          <img
+            src="chat.png"
+            alt="chatbot"
+            style={{
+              display: "flex",
+              margin: "auto",
+              width: isBelowMd ? "80%" : "60%",
+              borderRadius: 0,
+              boxShadow: "-5px -5px 105px #00aeff",
+              marginTop: 20,
+              marginBottom: 20,
+              padding: 10,
+            }}
+          />
+        </Box>
+      </Box>
+      <Footer />
+    </Box>
+  );
 };
 
 export default Home;

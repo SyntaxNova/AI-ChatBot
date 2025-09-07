@@ -1,19 +1,33 @@
-import { Link } from "react-router-dom";
+import { Typography } from '@mui/material';
 
-import styles from "./Logo.module.css";
-import logo from "/logos/home-bot-icon.png";
+import { Link } from 'react-router-dom';
 
 const Logo = () => {
-	return (
-		<div className={styles.parent}>
-				<Link to={"/"}>
-					<img src={logo} alt='logo' className={styles.logo} />
-				</Link>
-				<p className={styles.logo_p}>
-					<span className={styles.span}>MERN-GPT</span>
-				</p>
-		</div>
-	);
+  return (
+    <div style={{
+        display: "flex",
+        marginRight: "auto",
+        alignItems: "center",
+        gap: "10px",
+    }}>
+        <Link to={"/"}>
+        <img src='logo.png' alt='NovaAI' width={'55px'} height={'55px'}
+        className='image-inverted'
+        />
+        
+        </Link>{""}
+        <Typography sx={{
+            display: {md: "block", sm:"none", xs: "none"},
+            mr: "auto",
+            fontWeight: "800",
+            textShadow: "2px 2px 20px #000",
+        }}>
+            <span style={{
+                fontSize: "35px"
+            }}>NOVA</span>AI
+        </Typography>
+    </div>
+  );
 };
 
-export default Logo;
+export default Logo

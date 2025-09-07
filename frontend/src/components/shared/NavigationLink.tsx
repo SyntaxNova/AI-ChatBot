@@ -1,37 +1,23 @@
+import { Link } from "react-router-dom";
+
 type Props = {
-	to: string;
-	text: string;
-	onClick?: () => Promise<void>;
+  to: string;
+  bg: string;
+  text: string;
+  textColor: string;
+  onClick?: () => Promise<void>;
 };
-
-import { NavLink } from "react-router-dom";
-import { motion } from "framer-motion";
-
-import styles from "./NavigationLink.module.css";
-
-const linkVariant = {
-	whileHover: {
-		scale: 1.1,
-	},
-};
-
 const NavigationLink = (props: Props) => {
-	return (
-		<motion.div
-			className={styles.link}
-			variants={linkVariant}
-			whileHover='whileHover'
-            onClick={props.onClick}
-            >
-			<NavLink
-				to={props.to}
-				className={({ isActive, isPending }) =>
-					isPending ? `${styles.pending}` : isActive ? `${styles.active}` : `${styles.pending}`
-				}>
-				{props.text}
-			</NavLink>
-		</motion.div>
-	);
+  return (
+    <Link
+      onClick={props.onClick}
+      className="nav-link"
+      to={props.to}
+      style={{ background: props.bg, color: props.textColor }}
+    >
+      {props.text}
+    </Link>
+  );
 };
 
 export default NavigationLink;

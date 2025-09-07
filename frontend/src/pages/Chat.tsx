@@ -1,226 +1,204 @@
-import { useRef, useState, useEffect, useLayoutEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-
-import styles from "./Chat.module.css";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Box, Avatar, Typography, Button, IconButton } from "@mui/material";
+import red from "@mui/material/colors/red";
+import { useAuth } from "../context/AuthContext";
 import ChatItem from "../components/chat/ChatItem";
+import { IoMdSend } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 import {
-	deleteAllChats,
-	getAllChats,
-	postChatRequest,
-} from "../../helpers/api-functions";
-
-import sendIcon from "/logos/send-icon.png";
-import noMsgBot from "/logos/no-msg2.png";
-import upArrow from "/logos/up-arrow.png";
-import ChatLoading from "../components/chat/ChatLoading";
-
-import { useAuth } from "../context/context";
-import SpinnerOverlay from "../components/shared/SpinnerOverlay";
+  deleteUserChats,
+  getUserChats,
+  sendChatRequest,
+} from "../helpers/api-communicator";
 import toast from "react-hot-toast";
-
 type Message = {
-	role: "user" | "assistant";
-	content: string;
+  role: "user" | "assistant";
+  content: string;
 };
-
 const Chat = () => {
-	const auth = useAuth();
-	const navigate = useNavigate();
-
-	const [chatMessages, setChatMessages] = useState<Message[]>([]);
-	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [isLoadingChats, setIsLoadingChats] = useState<boolean>(true);
-	const [deleteChatToggle, setDeleteChatToggle] = useState<boolean>(false);
-
-	const inputRef = useRef<HTMLTextAreaElement | null>(null);
-	const messageContainerRef = useRef<HTMLDivElement | null>(null);
-
-	useEffect(() => {
-		if (messageContainerRef.current) {
-			messageContainerRef.current.scrollTop =
-				messageContainerRef.current.scrollHeight;
-		}
-	}, [chatMessages]);
-
-	useLayoutEffect(() => {
-		const getChats = async () => {
-			try {
-				if (auth?.isLoggedIn && auth.user) {
-					const data = await getAllChats();
-					setChatMessages([...data.chats]);
-				}
-				setIsLoadingChats(false);
-			} catch (err) {
-				console.log(err);
-				setIsLoadingChats(false);
-			}
-		};
-		getChats();
-	}, [auth]);
-
-	useEffect(() => {
-		if (!auth?.user) {
-			return navigate("/login");
-		}
-	}, [auth]);
-
-	const sendMsgHandler = async () => {
-		const content = inputRef.current?.value as string;
-
-		if (inputRef.current) inputRef.current.value = "";
-
-		const newMessage: Message = { role: "user", content };
-		setChatMessages((prev) => [...prev, newMessage]);
-
-		// send request to backend
-		setIsLoading(true);
-		const chatData = await postChatRequest(content);
-		setChatMessages([...chatData.chats]);
-		setIsLoading(false);
-	};
-
-	const deleteChatsToggle = () => {
-		setDeleteChatToggle((prevState) => !prevState);
-	};
-
-	const clearChatsHandler = async () => {
-		try {
-			toast.loading("Deleting Messages ...", { id: "delete-msgs" });
-			const data = await deleteAllChats();
-			setChatMessages(data.chats);
-			setDeleteChatToggle(false);
-			toast.success("Deleted Messages Successfully", { id: "delete-msgs" });
-		} catch (error: any) {
-			toast.error(error.message, { id: "delete-msgs" });
-		}
-	};
-
-	const variants = {
-		animate: {
-			y: [0, -10, 0, -10, 0],
-			transition: {
-				type: "spring",
-				y: { repeat: Infinity, duration: 4, stiffness: 100, damping: 5 },
-			},
-		},
-	};
-
-	const logo = {
-		animate: {
-			y: [0, -5, 0, -5, 0],
-			transition: {
-				type: "spring",
-				y: {
-					repeat: Infinity,
-					duration: 4,
-					stiffness: 100,
-					damping: 5,
-				},
-			},
-		},
-		animateReverse: {
-			transform: "rotate(180deg)",
-			y: "-4",
-			transition: {
-				duration: 0.5,
-			},
-		},
-		initialBtn: {
-			y: "4",
-			opacity: 0,
-		},
-		animateBtn: {
-			y: 0,
-			opacity: 1,
-			transition: {
-				duration: 0.5,
-			},
-		},
-		exitBtn: {
-			y: "-20",
-			opacity: 0,
-			transition: {
-				duration: 0.5,
-			},
-		},
-	};
-
-	const placeHolder = (
-		<div className={styles.no_msgs}>
-			<h3>GPT 3.5 TURBO</h3>
-			<motion.div
-				className={styles.no_msg_logo}
-				variants={variants}
-				animate='animate'>
-				<img alt='no msg bot' src={noMsgBot}></img>
-			</motion.div>
-			<p>
-				It's quiet in here! Be the first to break the silence and send a message
-				to get the conversation going.
-			</p>
-		</div>
-	);
-
-	const chats = chatMessages.map((chat) => (
-		<ChatItem //@ts-ignore
-			key={`${chat.content}${Math.random()}`} //@ts-ignore
-			content={chat.content} //@ts-ignore
-			role={chat.role}
-		/>
-	));
-
-	return (
-		<div className={styles.parent}>
-			<div className={styles.chat} ref={messageContainerRef}>
-				{isLoadingChats && <SpinnerOverlay />}
-				{!isLoadingChats && (
-					<>
-						{chatMessages.length === 0 && placeHolder}
-						{chatMessages.length !== 0 && chats}
-						{isLoading && <ChatLoading />}
-					</>
-				)}
-			</div>
-			<div className={styles.inputContainer}>
-				<div className={styles.inputArea}>
-					<div className={styles.eraseMsgs}>
-						<motion.img
-							variants={logo}
-							animate={!deleteChatToggle ? "animate" : "animateReverse"}
-							src={upArrow}
-							alt='top icon'
-							onClick={deleteChatsToggle}
-						/>
-						<AnimatePresence>
-							{deleteChatToggle && (
-								<motion.button
-									className={styles.eraseBtn}
-									onClick={clearChatsHandler}
-									variants={logo}
-									initial='initialBtn'
-									animate='animateBtn'
-									exit='exitBtn'>
-									CLEAR CHATS
-								</motion.button>
-							)}
-						</AnimatePresence>
-					</div>
-					<textarea
-						className={styles.textArea}
-						maxLength={1500}
-						ref={inputRef}
-                        rows={1}
-						disabled={isLoadingChats || isLoading ? true : false}
-						placeholder='Enter your query here'
-					/>
-					<button className={styles.icon} onClick={sendMsgHandler}>
-						<img alt='icon' src={sendIcon} />
-					</button>
-				</div>
-			</div>
-		</div>
-	);
+  const navigate = useNavigate();
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const auth = useAuth();
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const handleSubmit = async () => {
+    const content = inputRef.current?.value as string;
+    if (inputRef && inputRef.current) {
+      inputRef.current.value = "";
+    }
+    const newMessage: Message = { role: "user", content };
+    setChatMessages((prev) => [...prev, newMessage]);
+    const chatData = await sendChatRequest(content);
+    setChatMessages([...chatData.chats]);
+    //
+  };
+  const handleDeleteChats = async () => {
+    try {
+      toast.loading("Deleting Chats", { id: "deletechats" });
+      await deleteUserChats();
+      setChatMessages([]);
+      toast.success("Deleted Chats Successfully", { id: "deletechats" });
+    } catch (error) {
+      console.log(error);
+      toast.error("Deleting chats failed", { id: "deletechats" });
+    }
+  };
+  useLayoutEffect(() => {
+    if (auth?.isLoggedIn && auth.user) {
+      toast.loading("Loading Chats", { id: "loadchats" });
+      getUserChats()
+        .then((data) => {
+          setChatMessages([...data.chats]);
+          toast.success("Successfully loaded chats", { id: "loadchats" });
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error("Loading Failed", { id: "loadchats" });
+        });
+    }
+  }, [auth]);
+  useEffect(() => {
+    if (!auth?.user) {
+      return navigate("/login");
+    }
+  }, [auth]);
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flex: 1,
+        width: "100%",
+        height: "100%",
+        mt: 3,
+        gap: 3,
+      }}
+    >
+      <Box
+        sx={{
+          display: { md: "flex", xs: "none", sm: "none" },
+          flex: 0.2,
+          flexDirection: "column",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            width: "100%",
+            height: "60vh",
+            bgcolor: "linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)",
+            borderRadius: 5,
+            flexDirection: "column",
+            mx: 3,
+          }}
+        >
+          <Avatar
+            sx={{
+              mx: "auto",
+              my: 2,
+              bgcolor: "linear-gradient(45deg, #667eea 0%, #764ba2 100%)",
+              color: "white",
+              fontWeight: 700,
+            }}
+          >
+            {auth?.user?.name[0]}
+            {auth?.user?.name.split(" ")[1][0]}
+          </Avatar>
+          <Typography sx={{ mx: "auto", fontFamily: "work sans" }}>
+            You are talking to a ChatBOT
+          </Typography>
+          <Typography sx={{ mx: "auto", fontFamily: "work sans", my: 4, p: 3 }}>
+            You can ask some questions related to Knowledge, Business, Advices,
+            Education, etc. But avoid sharing personal information
+          </Typography>
+          <Button
+            onClick={handleDeleteChats}
+            sx={{
+              width: "200px",
+              my: "auto",
+              color: "white",
+              fontWeight: "700",
+              borderRadius: 3,
+              mx: "auto",
+              bgcolor: "linear-gradient(45deg, #ff6b6b 0%, #ee5a24 100%)",
+              ":hover": {
+                bgcolor: "linear-gradient(45deg, #ee5a24 0%, #ff9ff3 100%)",
+                transform: "translateY(-2px)",
+                boxShadow: "0 8px 25px rgba(255, 107, 107, 0.4)",
+              },
+            }}
+          >
+            Clear Conversation
+          </Button>
+        </Box>
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          flex: { md: 0.8, xs: 1, sm: 1 },
+          flexDirection: "column",
+          px: 3,
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: "40px",
+            color: "white",
+            mb: 2,
+            mx: "auto",
+            fontWeight: "600",
+          }}
+        >
+          Model - GPT 3.5 Turbo
+        </Typography>
+        <Box
+          sx={{
+            width: "100%",
+            height: "60vh",
+            borderRadius: 3,
+            mx: "auto",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "scroll",
+            overflowX: "hidden",
+            overflowY: "auto",
+            scrollBehavior: "smooth",
+          }}
+        >
+          {chatMessages.map((chat, index) => (
+            //@ts-ignore
+            <ChatItem content={chat.content} role={chat.role} key={index} />
+          ))}
+        </Box>
+        <div
+          style={{
+            width: "100%",
+            borderRadius: 8,
+            backgroundColor: "rgba(102, 126, 234, 0.1)",
+            border: "1px solid rgba(102, 126, 234, 0.3)",
+            display: "flex",
+            margin: "auto",
+          }}
+        >
+          {" "}
+          <input
+            ref={inputRef}
+            type="text"
+            style={{
+              width: "100%",
+              backgroundColor: "transparent",
+              padding: "30px",
+              border: "none",
+              outline: "none",
+              color: "white",
+              fontSize: "20px",
+            }}
+          />
+          <IconButton onClick={handleSubmit} sx={{ color: "white", mx: 1 }}>
+            <IoMdSend />
+          </IconButton>
+        </div>
+      </Box>
+    </Box>
+  );
 };
 
 export default Chat;

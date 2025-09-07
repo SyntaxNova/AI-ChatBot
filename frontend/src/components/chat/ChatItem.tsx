@@ -1,53 +1,102 @@
-import ReactMarkdown from 'react-markdown'
-import reactGFM from 'remark-gfm'
-import rehypeHighlight from 'rehype-highlight';
+import { Box, Avatar, Typography } from "@mui/material";
+import { useAuth } from "../../context/AuthContext";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { coldarkDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-import styles from "./ChatItem.module.css";
-import 'highlight.js/styles/atom-one-dark.css';
+function extractCodeFromString(message: string) {
+  if (message.includes("```")) {
+    const blocks = message.split("```");
+    return blocks;
+  }
+}
 
-import botIcon from "/logos/bot.png";
-import { useAuth } from "../../context/context";
-
-type Props = {
-	content: string;
-	role: string;
-};
-
-const ChatItem = (props: Props) => {
-	
-	const auth = useAuth();
-
-	const botMsg = (
-		<div className={`${styles.parent} ${styles.bot_parent}`}>
-			<div className={`${styles.avatar}`}>
-				<img src={botIcon} alt='chat bot icon'></img>
-			</div>
-			<div className={`${styles.msg} markdown-body`}>
-                <ReactMarkdown remarkPlugins={[reactGFM]} rehypePlugins={[rehypeHighlight]}>  
-                    {props.content}
-                </ReactMarkdown>
-			</div>
-		</div>
-	);
-
-	const userMsg = (
-		<div className={`${styles.parent} ${styles.user_parent}`}>
-			<div className={`${styles.avatar} ${styles.user_avatar}`}>
-				{auth?.user?.name[0]}
-				{auth?.user?.name.split(" ")[1][0]}
-			</div>
-			<div className={styles.msg}>
-				<p>{props.content}</p>
-			</div>
-		</div>
-	);
-
-	return (
-		<>
-			{props.role === "assistant" && botMsg}
-			{props.role === "user" && userMsg}
-		</>
-	);
+function isCodeBlock(str: string) {
+  if (
+    str.includes("=") ||
+    str.includes(";") ||
+    str.includes("[") ||
+    str.includes("]") ||
+    str.includes("{") ||
+    str.includes("}") ||
+    str.includes("#") ||
+    str.includes("//")
+  ) {
+    return true;
+  }
+  return false;
+}
+const ChatItem = ({
+  content,
+  role,
+}: {
+  content: string;
+  role: "user" | "assistant";
+}) => {
+  const messageBlocks = extractCodeFromString(content);
+  const auth = useAuth();
+  return role == "assistant" ? (
+    <Box
+      sx={{
+        display: "flex",
+        p: 2,
+        bgcolor: "linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)",
+        gap: 2,
+        borderRadius: 2,
+        my: 1,
+      }}
+    >
+      <Avatar sx={{ ml: "0" }}>
+        <img src="openai.png" alt="openai" width={"30px"} />
+      </Avatar>
+      <Box>
+        {!messageBlocks && (
+          <Typography sx={{ fontSize: "20px" }}>{content}</Typography>
+        )}
+        {messageBlocks &&
+          messageBlocks.length &&
+          messageBlocks.map((block) =>
+            isCodeBlock(block) ? (
+              <SyntaxHighlighter style={coldarkDark} language="javascript">
+                {block}
+              </SyntaxHighlighter>
+            ) : (
+              <Typography sx={{ fontSize: "20px" }}>{block}</Typography>
+            )
+          )}
+      </Box>
+    </Box>
+  ) : (
+    <Box
+      sx={{
+        display: "flex",
+        p: 2,
+        bgcolor: "linear-gradient(135deg, rgba(79, 172, 254, 0.2) 0%, rgba(0, 242, 254, 0.2) 100%)",
+        gap: 2,
+        borderRadius: 2,
+      }}
+    >
+      <Avatar sx={{ ml: "0", bgcolor: "linear-gradient(45deg, #4facfe 0%, #00f2fe 100%)", color: "white" }}>
+        {auth?.user?.name[0]}
+        {auth?.user?.name.split(" ")[1][0]}
+      </Avatar>
+      <Box>
+        {!messageBlocks && (
+          <Typography sx={{ fontSize: "20px" }}>{content}</Typography>
+        )}
+        {messageBlocks &&
+          messageBlocks.length &&
+          messageBlocks.map((block) =>
+            isCodeBlock(block) ? (
+              <SyntaxHighlighter style={coldarkDark} language="javascript">
+                {block}
+              </SyntaxHighlighter>
+            ) : (
+              <Typography sx={{ fontSize: "20px" }}>{block}</Typography>
+            )
+          )}
+      </Box>
+    </Box>
+  );
 };
 
 export default ChatItem;

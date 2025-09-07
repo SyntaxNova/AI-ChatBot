@@ -1,65 +1,90 @@
-@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap");
-
-/*
-font-family: 'Roboto Slab', serif;
-font-family: 'Work Sans', sans-serif;
-*/
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@300;400;500;600;800&family=Work+Sans&display=swap");
 
 html,
 body {
-	margin: 0;
-	padding: 0;
-	background: #05101c;
-	color: white;
-	font-family: "Lato", sans-serif !important;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  color: white;
+  font-family: "Roboto Slab", serif;
+  min-height: 100vh;
 }
 
-a {
-	color: inherit;
-	text-decoration: none;
+.image{
+  filter: invert(100%);
 }
 
-a:hover {
-	text-decoration: none;
-	cursor: pointer;
-	color: hover;
+.nav-link {
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-right: 10px;
+  margin-left: 10px;
+  padding: 8px 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-input {
-	/* Reset the default input styles */
-	appearance: none;
-	border: 1px solid #ccc;
-	padding: 8px;
-	margin: 4px 0;
-	font-size: inherit;
+.nav-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+.MuiOutlinedInput-input-root.Mui-focused,
+.MuiOutlinedInput-notchedOutline {
+  border-color: white !important;
 }
 
-input:active,
-input:focus {
-	/* Optional: Reset additional active/focus styles */
-	outline: none;
-	box-shadow: none;
+.rotate {
+  animation: rotation 8s infinite linear;
 }
 
-button {
-	background: none;
-	border: none;
-	padding: 0;
-	margin: 0;
-	font-size: inherit;
-	font-family: inherit;
-	cursor: pointer;
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
 }
 
-button:focus {
-	outline: none;
+.typing-animation {
+  font-size: 60px;
+  background: linear-gradient(45deg, #667eea, #764ba2, #f093fb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
 }
 
-textarea {
-	border: none;
-	overflow: auto;
-	outline: none;
-	-webkit-box-shadow: none;
-	-moz-box-shadow: none;
-	box-shadow: none;
+@media (max-width: 1200px) {
+  .typing-animation {
+    font-size: 50px;
+  }
 }
+
+@media (max-width: 992px) {
+  .typing-animation {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .typing-animation {
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 576px) {
+  .typing-animation {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 450px) {
+  .typing-animation {
+    font-size: 10px;
+  }
+}
+
